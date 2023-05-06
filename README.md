@@ -3,6 +3,8 @@ Data Analysis portfolio
 
 <h1>Covid 19 data</h1>
 
+Python examples can be seen in HR_analysis
+
 
 Tableau dashboard link
 https://public.tableau.com/app/profile/manzil.sapkota/viz/Covid_16735656188180/Dashboard1?publish=yes
