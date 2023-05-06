@@ -1,0 +1,202 @@
+ALTER TABLE PortfolioProjects..CovidDeaths
+ALTER COLUMN new_deaths float;
+ALTER TABLE PortfolioProjects..CovidDeaths
+ALTER COLUMN total_deaths float;
+ALTER TABLE PortfolioProjects..CovidDeaths
+ALTER COLUMN total_cases float;
+ALTER TABLE PortfolioProjects..CovidVax
+ALTER COLUMN new_vaccinations float;
+
+
+
+
+
+-- get total death count for each continent, ordered from highest to lowest
+SELECT continent, MAX(total_deaths) as totaldeathcount
+FROM PortfolioProjects..CovidDeaths
+WHERE continent is NOT NULL
+GROUP BY continent
+ORDER BY totaldeathcount DESC
+
+-- get location, date, population, total cases, new cases, and infection rate for USA, ordered by location and date
+SELECT location, date, population, total_cases, new_cases, (total_cases/population)*100 as infection_rate
+FROM PortfolioProjects..CovidDeaths
+WHERE location like '%states%'
+ORDER BY location, date
+
+-- get location, date, total cases, total deaths, and death rate for states, ordered by location and date
+SELECT location, date, total_cases, total_deaths, (total_deaths/total_cases) * 100 as death_rate
+FROM PortfolioProjects..CovidDeaths
+WHERE location is not null
+ORDER BY location, date
+
+-- get date, total cases, total deaths, and death rate for all continents, grouped by date and ordered by date
+SELECT date, continent, SUM(new_cases) as total_cases, SUM(CONVERT(float, new_deaths)) as total_deaths,
+CASE 
+    WHEN SUM(new_cases) > 0 THEN (SUM(CONVERT(float, new_deaths))/SUM(new_cases))*100
+    ELSE 0
+END as death_rate
+FROM PortfolioProjects..CovidDeaths
+WHERE continent is NOT NULL
+GROUP BY date, continent
+ORDER BY date, continent;
+
+
+-- get total cases, total deaths, and death rate for all continents
+SELECT SUM(new_cases) as total_cases, SUM(new_deaths) as total_deaths, (SUM(new_deaths)/SUM(new_cases))*100 as death_rate
+FROM PortfolioProjects..CovidDeaths
+WHERE continent is NOT NULL
+
+
+-- get total vaccination count for each location, ordered from highest to lowest
+SELECT location, SUM(convert(float, new_vaccinations)) as total_vaccinations
+FROM PortfolioProjects..CovidVax
+GROUP BY location
+ORDER BY total_vaccinations DESC
+
+-- get location, population, total cases, and vaccination rate (total vaccinations / population) for each location, ordered by vaccination rate
+SELECT cd.location, cd.population, cd.total_cases, SUM(convert (float, cv.new_vaccinations)) / cd.population * 100 as vaccination_rate
+FROM PortfolioProjects..CovidDeaths cd
+JOIN PortfolioProjects..CovidVax cv
+ON cd.location = cv.location
+GROUP BY cd.location, cd.population, cd.total_cases
+ORDER BY vaccination_rate DESC
+
+-- get location, date, total cases, total deaths, and death rate for locations with over 1 million population, ordered by death rate
+SELECT location, date, total_cases, total_deaths, (total_deaths/total_cases) * 100 as death_rate
+FROM PortfolioProjects..CovidDeaths
+WHERE population > 1000000
+ORDER BY death_rate DESC
+
+-- get total cases and total deaths for each location, ordered by total cases
+SELECT location, total_cases, total_deaths
+FROM PortfolioProjects..CovidDeaths
+ORDER BY total_cases DESC
+
+-- get total cases and total deths from each continent, ordered by total cases
+SELECT continent, SUM(total_cases) as total_cases, SUM(convert(float, total_deaths)) as total_deaths
+FROM PortfolioProjects..CovidDeaths
+GROUP BY continent
+ORDER BY total_cases DESC
+
+-- get total cases and total deaths for each location, grouped by location and ordered by total cases
+SELECT location, SUM(total_cases) as total_cases, SUM(total_deaths) as total_deaths
+FROM PortfolioProjects..CovidDeaths
+GROUP BY location
+ORDER BY total_cases DESC
+
+-- get total cases and total deaths for each location, ordered by total cases
+SELECT location, total_cases, total_deaths
+FROM PortfolioProjects..CovidDeaths
+ORDER BY total_cases DESC
+
+-- get total cases and total deaths for each continent, grouped by continent and ordered by total cases
+SELECT continent, SUM(total_cases) as total_cases, SUM(total_deaths) as total_deaths
+FROM PortfolioProjects..CovidDeaths
+WHERE continent IS not NULL
+GROUP BY continent
+ORDER BY total_cases DESC
+
+-- get total cases and total deaths for each location, grouped by location and ordered by total cases
+SELECT location, SUM(total_cases) as total_cases, SUM(total_deaths) as total_deaths
+FROM PortfolioProjects..CovidDeaths
+WHERE total_deaths is not null
+GROUP BY location
+ORDER BY total_cases DESC
+
+-- get total cases, total deaths, and death rate (total deaths / total cases) for each location, grouped by location and ordered by death rate
+SELECT location, SUM(total_cases) as total_cases, SUM(total_deaths) as total_deaths, (SUM(total_deaths)/SUM(total_cases)) * 100 as death_rate
+FROM PortfolioProjects..CovidDeaths
+GROUP BY location
+ORDER BY death_rate DESC
+
+-- get total cases and total vaccinations for each location, grouped by location and ordered by total cases
+SELECT cd.location, SUM(cd.total_cases) as total_cases, SUM(cv.new_vaccinations) as total_vaccinations
+FROM PortfolioProjects..CovidDeaths cd
+JOIN PortfolioProjects..CovidVax cv
+ON cd.location = cv.location
+GROUP BY cd.location
+ORDER BY total_cases DESC
+
+
+
+
+
+
+CREATE VIEW continent_death_count AS
+SELECT continent, MAX(total_deaths) as totaldeathcount
+FROM PortfolioProjects..CovidDeaths
+WHERE continent is NOT NULL
+GROUP BY continent
+
+
+-- shows the total death count for each continent
+CREATE VIEW state_data AS
+SELECT location, date, population, total_cases, new_cases, (total_cases/population)*100 as infection_rate
+FROM PortfolioProjects..CovidDeaths
+WHERE location like '%states%'
+
+-- shows the location, date, population, total cases, new cases, and infection rate for states
+CREATE VIEW location_vaccination_count AS
+SELECT location, SUM(new_vaccinations) as total_vaccinations
+FROM PortfolioProjects..CovidVax
+GROUP BY location
+
+-- shows the total vaccination count for each location
+CREATE VIEW location_vaccination_rates AS
+SELECT cd.location, cd.population, cd.total_cases, SUM(cv.new_vaccinations) / cd.population * 100 as vaccination_rate
+FROM PortfolioProjects..CovidDeaths cd
+JOIN PortfolioProjects..CovidVax cv
+ON cd.location = cv
+
+-- shows the location, population, total cases, and vaccination rate (total vaccinations / population) for each location
+CREATE VIEW location_vaccination_rates AS
+SELECT cd.location, cd.population, cd.total_cases, SUM(cv.new_vaccinations) / cd.population * 100 as vaccination_rate
+FROM PortfolioProjects..CovidDeaths cd
+JOIN PortfolioProjects..CovidVax cv
+ON cd.location = cv.location
+GROUP BY cd.location, cd.population, cd.total_cases
+
+
+
+-- create a view that shows the total cases and total deaths for each location, ordered by total cases
+CREATE VIEW location_data AS
+SELECT location, total_cases, total_deaths
+FROM PortfolioProjects..CovidDeaths
+ORDER BY total_cases DESC
+
+-- create a view that shows the total cases and total deaths for each continent, grouped by continent and ordered by total cases
+CREATE VIEW continent_data AS
+SELECT continent, SUM(total_cases) as total_cases, SUM(total_deaths) as total_deaths
+FROM PortfolioProjects..CovidDeaths
+GROUP BY continent
+ORDER BY total_cases DESC
+
+
+-- create a view that shows the total cases, total deaths, and death rate (total deaths / total cases) for each location, grouped by location and ordered by death rate
+CREATE VIEW location_death_rates AS
+SELECT location, SUM(total_cases) as total_cases, SUM(total_deaths) as total_deaths, (SUM(total_deaths)/SUM(total_cases)) * 100 as death_rate
+FROM PortfolioProjects..CovidDeaths
+GROUP BY location
+ORDER BY death_rate DESC
+
+-- create a view that shows the total cases and total vaccinations for each location, grouped by location and ordered by total cases
+CREATE VIEW location_vaccination_data AS
+SELECT cd.location, SUM(cd.total_cases) as total_cases, SUM(cv.new_vaccinations) as total_vaccinations
+FROM PortfolioProjects..CovidDeaths cd
+JOIN PortfolioProjects..CovidVax cv
+ON cd.location = cv.location
+GROUP BY cd.location
+ORDER BY total_cases DESC
+
+
+
+
+SELECT * FROM continent_death_count
+
+
+SELECT * FROM location_data;
+SELECT ld.location, ld.total_cases, lv.total_vaccinations
+FROM location_data ld
+JOIN location_vaccination_data lv
+ON ld.location = lv.location

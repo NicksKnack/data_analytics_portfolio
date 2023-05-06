@@ -1,9 +1,10 @@
 # Data Analysis
 Data Analysis portfolio
 
+Python examples can be seen in HR_analysis
 <h1>Covid 19 data</h1>
 
-Python examples can be seen in HR_analysis
+
 
 
 Tableau dashboard link
@@ -25,3 +26,10 @@ Microsoft Powred BI mobile picture
 <h1> Data Professionals Project </h1>
 
 <img src="https://github.com/NicksKnack/Data_Analysis/blob/main/Data_Pro_survey.png?raw=true" alt="Data Professionals">
+
+
+<h1>Certificates:<h1>
+<a href="https://coursera.org/share/20f924d90d154b533df1f3875c0ac8f6"><img src="https://s3.amazonaws.com/coursera_assets/meta_images/generated/CERTIFICATE_LANDING_PAGE/CERTIFICATE_LANDING_PAGE~RBAJHMJ4MK8R/CERTIFICATE_LANDING_PAGE~RBAJHMJ4MK8R.jpeg
+" alt="Cert"></a>
+
+<a href="https://coursera.org/share/d5ae894020f34cea4804f09ab0ecccee"><img src="https://s3.amazonaws.com/coursera_assets/meta_images/generated/CERTIFICATE_LANDING_PAGE/CERTIFICATE_LANDING_PAGE~CWL54MKCXCFS/CERTIFICATE_LANDING_PAGE~CWL54MKCXCFS.jpeg" alt="Cert"></a>
